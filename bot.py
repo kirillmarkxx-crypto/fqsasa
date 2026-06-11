@@ -1,11 +1,11 @@
+import os
 import asyncio
 import requests
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 
-from config import BOT_TOKEN
-
-API_URL = "http://127.0.0.1:8080"
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+API_URL = os.getenv("API_URL")
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
@@ -13,19 +13,7 @@ dp = Dispatcher()
 
 @dp.message(Command("start"))
 async def start(msg: types.Message):
-    await msg.answer(
-        "🤖 Anarchy Control\n\n"
-        "/bots - список\n"
-        "/mine <id> - копать\n"
-        "/stop <id> - стоп\n"
-        "/status - статус"
-    )
-
-
-@dp.message(Command("bots"))
-async def bots_list(msg: types.Message):
-    r = requests.get(f"{API_URL}/bots")
-    await msg.answer(f"📊 Bots:\n{r.text}")
+    await msg.answer("🤖 Bot ready\n/mine 1\n/stop 1\n/bots")
 
 
 @dp.message(Command("mine"))
@@ -36,7 +24,7 @@ async def mine(msg: types.Message):
         "command": "mine"
     })
 
-    await msg.answer(f"⛏ Bot {bot_id} mining started")
+    await msg.answer(f"⛏ Bot {bot_id} mining")
 
 
 @dp.message(Command("stop"))
@@ -50,10 +38,10 @@ async def stop(msg: types.Message):
     await msg.answer(f"🛑 Bot {bot_id} stopped")
 
 
-@dp.message(Command("status"))
-async def status(msg: types.Message):
+@dp.message(Command("bots"))
+async def bots_list(msg: types.Message):
     r = requests.get(f"{API_URL}/bots")
-    await msg.answer(r.text)
+    await msg.answer(str(r.json()))
 
 
 async def main():
